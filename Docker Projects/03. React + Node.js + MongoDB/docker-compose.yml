@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+
+  # ── MongoDB ───────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_DATABASE: tasksdb
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  # ── Node.js Backend API ───────────────────────────────────────
+  backend:
+    build: ./backend
+    container_name: nodejs-backend
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      MONGO_URI: mongodb://mongodb:27017/tasksdb
+    depends_on:
+      - mongodb
+    networks:
+      - frontend-network   # so nginx can reach it
+      - backend-network    # so it can reach MongoDB
+    restart: unless-stopped
+
+  # ── React Frontend (Nginx) ────────────────────────────────────
+  frontend:
+    build: ./frontend
+    container_name: react-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - frontend-network
+    restart: unless-stopped
+
+# ── Volumes ───────────────────────────────────────────────────
+volumes:
+  mongo-data:
+
+# ── Networks ──────────────────────────────────────────────────
+networks:
+  frontend-network:   # nginx ↔ backend
+  backend-network:    # backend ↔ mongodb (MongoDB NOT exposed to frontend)

@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+
+  # ── Node.js App (scalable) ────────────────────────────────────
+  # Run with: docker compose up -d --scale app=3
+  app:
+    build: .
+    networks:
+      - proxy-network
+    restart: unless-stopped
+    # No "ports" here — only Nginx is exposed to the host
+
+  # ── Nginx Load Balancer ───────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-lb
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    networks:
+      - proxy-network
+    restart: unless-stopped
+
+networks:
+  proxy-network:

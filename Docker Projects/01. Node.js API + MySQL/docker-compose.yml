@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+
+  # ── MySQL Database ────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql          # persist database files
+      - ./app/init.sql:/docker-entrypoint-initdb.d/init.sql  # seed data on first run
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # ── Node.js API ───────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: nodejs-api
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      DB_HOST: mysql          # reach MySQL by container name (Docker DNS)
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy   # wait for MySQL to be ready
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# ── Named Volumes ─────────────────────────────────────────────
+volumes:
+  mysql-data:
+    driver: local
+
+# ── Custom Network ────────────────────────────────────────────
+networks:
+  app-network:
+    driver: bridge

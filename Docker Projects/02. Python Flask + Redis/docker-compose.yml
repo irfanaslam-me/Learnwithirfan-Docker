@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+
+  # ── Redis Cache ───────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    volumes:
+      - redis-data:/data      # persist cache across restarts
+    networks:
+      - flask-network
+    restart: unless-stopped
+
+  # ── Flask Application ─────────────────────────────────────────
+  flask-app:
+    build: .
+    container_name: flask-app
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: production
+      REDIS_HOST: redis         # Docker DNS — reach Redis by service name
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+    networks:
+      - flask-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  flask-network:
+    driver: bridge
