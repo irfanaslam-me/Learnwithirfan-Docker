@@ -37,6 +37,7 @@ No prior knowledge of containers, Linux, or DevOps is assumed.
 | [14](14.%20Docker%20Resource%20Management.md) | Resource Management | CPU limits (`--cpus`, `--cpu-shares`, `--cpuset-cpus`), memory limits, OOM behavior, live monitoring |
 | [15](15.%20Docker%20Security%20Best%20Practices.md) | Security Best Practices | Non-root user, read-only filesystem, capability dropping, secrets, image scanning, seccomp |
 | [16](16.%20Docker%20Multi-Stage%20Builds.md) | Multi-Stage Builds | Build stages, `COPY --from`, size optimization, Node/Go/Python/React examples, build cache |
+| [17](17.%20Docker%20Commands%20Reference.md) | Commands Reference | Every command explained — why the name, what it does, every flag, examples, visualizations, and a quick decision guide |
 
 ---
 
@@ -105,7 +106,19 @@ docker system df                      # Show disk usage
 1. Read each file in order — concepts build on each other
 2. Run every command yourself — reading is not enough
 3. Experiment after each section — break things, fix them
-4. Use the Quick Reference tables to look up commands fast
+4. Use [17. Docker Commands Reference.md](17.%20Docker%20Commands%20Reference.md) as your daily lookup guide
+
+---
+
+## Resources & Links
+
+| Resource | Link |
+|----------|------|
+| Docker Official Docs | [docs.docker.com](https://docs.docker.com) |
+| Docker Hub | [hub.docker.com](https://hub.docker.com) |
+| Chocolatey Setup | [docs.chocolatey.org/en-us/choco/setup](https://docs.chocolatey.org/en-us/choco/setup/) |
+| Learn With Irfan | [learnwithirfan.com](https://learnwithirfan.com) |
+| VisitToMe | [visittome.com](https://visittome.com) |
 
 ---
 
